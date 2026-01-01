@@ -9,4 +9,10 @@ import rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus;
 public class CreateCompanyPaymentResponseDto {
     private String id;
     private TransactionStatus status;
+
+    /** Stripe Checkout Session id (cs_...). Present when using Stripe Checkout. */
+    private String stripeCheckoutSessionId;
+
+    /** Stripe hosted Checkout URL to redirect the browser to. */
+    private String checkoutUrl;
 }

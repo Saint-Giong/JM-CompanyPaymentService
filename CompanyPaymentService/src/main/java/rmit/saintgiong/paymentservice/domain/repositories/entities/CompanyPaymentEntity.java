@@ -10,7 +10,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "transaction", indexes = {
         @Index(name = "idx_transaction_payment_txn_id", columnList = "payment_transaction_id"),
-        @Index(name = "idx_transaction_stripe_intent_id", columnList = "stripe_payment_intent_id")
+        @Index(name = "idx_transaction_stripe_intent_id", columnList = "stripe_payment_intent_id"),
+        @Index(name = "idx_transaction_stripe_checkout_session_id", columnList = "stripe_checkout_session_id")
 })
 @Getter
 @Setter
@@ -46,6 +47,9 @@ public class CompanyPaymentEntity {
 
     @Column(name = "stripe_payment_intent_id")
     private String stripePaymentIntentId;
+
+    @Column(name = "stripe_checkout_session_id")
+    private String stripeCheckoutSessionId;
 
     @Column(name = "payment_transaction_id", length = 255, unique = true)
     private String paymentTransactionId;

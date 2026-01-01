@@ -2,6 +2,8 @@ server:
   port: 8081
 
 spring:
+  config:
+    import: optional:file:../.env[.properties],optional:file:.env[.properties]
   application:
     name: payment-service
   datasource:
@@ -53,8 +55,8 @@ springdoc:
   show-actuator: false
 
 stripe:
-  apiKey:
-  webhookSecret:
+  apiKey: ${STRIPE_API_KEY:}
+  webhookSecret: ${STRIPE_WEBHOOK_SECRET:}
   checkout:
-    successUrl: http://localhost:3000/payment/success
-    cancelUrl: http://localhost:3000/payment/cancel
+    successUrl: ${STRIPE_CHECKOUT_SUCCESS_URL:http://localhost:3000/payment/success}
+    cancelUrl: ${STRIPE_CHECKOUT_CANCEL_URL:http://localhost:3000/payment/cancel}

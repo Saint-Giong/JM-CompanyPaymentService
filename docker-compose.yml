@@ -4,6 +4,8 @@ services:
   database:
     image: postgres:15
     container_name: companypayment_db
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

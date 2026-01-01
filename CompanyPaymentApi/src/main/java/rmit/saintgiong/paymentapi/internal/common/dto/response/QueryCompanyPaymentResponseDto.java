@@ -11,12 +11,10 @@ import rmit.saintgiong.paymentapi.internal.common.type.PaymentMethod;
 public class QueryCompanyPaymentResponseDto {
     private String id;
     private String companyId;
-    private Long amount;
+    private Double amount;
     private String currency;
     private TransactionStatus status;
     private PaymentMethod method;
     private String paymentTransactionId;
-    private String stripePaymentIntentId;
-    private String description;
     private Instant createdAt;
 }

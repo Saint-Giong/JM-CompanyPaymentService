@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface CompanyPaymentRepository extends JpaRepository<CompanyPaymentEntity, UUID> {
     Optional<CompanyPaymentEntity> findByStripePaymentIntentId(String stripePaymentIntentId);
+    Optional<CompanyPaymentEntity> findByStripeCheckoutSessionId(String stripeCheckoutSessionId);
     Optional<CompanyPaymentEntity> findByPaymentTransactionId(String paymentTransactionId);
 }
