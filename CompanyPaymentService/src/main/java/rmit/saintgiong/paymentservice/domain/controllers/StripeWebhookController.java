@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus;
 import rmit.saintgiong.paymentservice.domain.repositories.CompanyPaymentRepository;
 import rmit.saintgiong.paymentservice.domain.repositories.entities.CompanyPaymentEntity;
 
 import java.util.Map;
 import java.util.UUID;
+
+import static rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus.FAILED;
+import static rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus.SUCCESSFUL;
 
 @RestController
 @RequestMapping("/stripe")
@@ -28,7 +30,7 @@ public class StripeWebhookController {
     private final ObjectMapper objectMapper;
 
     @Value("${stripe.webhookSecret:}")
-    private String webhookSecret;
+    private final String webhookSecret;
 
     public StripeWebhookController(
             CompanyPaymentRepository repository,
@@ -94,7 +96,7 @@ public class StripeWebhookController {
         CompanyPaymentEntity entity = findByCheckoutSessionInfo(info);
         if (entity == null) return;
 
-        entity.setStatus(TransactionStatus.SUCCESSFUL);
+        entity.setStatus(SUCCESSFUL);
         if (info.paymentIntentId != null && !info.paymentIntentId.isBlank()) {
             entity.setPaymentTransactionId(info.paymentIntentId);
         }
@@ -108,7 +110,7 @@ public class StripeWebhookController {
         CompanyPaymentEntity entity = findByCheckoutSessionInfo(info);
         if (entity == null) return;
 
-        entity.setStatus(TransactionStatus.SUCCESSFUL);
+        entity.setStatus(SUCCESSFUL);
         if (info.paymentIntentId != null && !info.paymentIntentId.isBlank()) {
             entity.setPaymentTransactionId(info.paymentIntentId);
         }
@@ -122,7 +124,7 @@ public class StripeWebhookController {
         CompanyPaymentEntity entity = findByCheckoutSessionInfo(info);
         if (entity == null) return;
 
-        entity.setStatus(TransactionStatus.FAILED);
+        entity.setStatus(FAILED);
         repository.save(entity);
     }
 
@@ -164,7 +166,7 @@ public class StripeWebhookController {
         if (pi == null) return;
 
         repository.findByStripePaymentIntentId(pi.getId()).ifPresent(entity -> {
-            entity.setStatus(TransactionStatus.SUCCESSFUL);
+            entity.setStatus(SUCCESSFUL);
 
             String chargeId = null;
             if (pi.getLatestCharge() != null) {
@@ -184,7 +186,7 @@ public class StripeWebhookController {
 
         repository.findByStripePaymentIntentId(pi.getId())
                 .ifPresent(entity -> {
-                    entity.setStatus(TransactionStatus.FAILED);
+                    entity.setStatus(FAILED);
                     repository.save(entity);
                 });
     }
