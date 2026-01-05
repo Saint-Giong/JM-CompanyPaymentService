@@ -1,4 +1,4 @@
-package rmit.saintgiong.paymentservice.config;
+package rmit.saintgiong.paymentservice.stripe.config;
 
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;

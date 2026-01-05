@@ -1,13 +1,13 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8187}
 
 spring:
-  config:
-    import: optional:file:../.env[.properties],optional:file:.env[.properties]
   application:
     name: payment-service
+  config:
+    import: optional:file:../.env[.properties],optional:file:.env[.properties]
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/payment_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5539/transaction_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -18,6 +18,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD:}
+      port: ${REDIS_PORT:6479}
+      timeout: 2000ms
 
 management:
   endpoints:
@@ -43,6 +49,28 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8070/eureka}
 
+kafka:
+  kafka-host-url: ${KAFKA_HOST_URL:localhost:9192}
+  schema-registry-host-url: ${SCHEMA_REGISTRY_HOST_URL:http://localhost:9191}
+
+key:
+  public-key-b64: ${PUBLIC_KEY_B64:}
+  private-key-b64: ${PRIVATE_KEY_B64:}
+
+jwe:
+  issuer: ${JWE_ISSUER:JM_BACKEND}
+  temp-token-ttl-seconds: ${JWE_TEMP_TOKEN_TTL:300}
+  access-token-ttl-seconds: ${JWE_ACCESS_TOKEN_TTL:900}
+  refresh-token-ttl-seconds: ${JWE_REFRESH_TOKEN_TTL:604800}
+
+
+stripe:
+  apiKey: ${STRIPE_API_KEY:}
+  webhookSecret: ${STRIPE_WEBHOOK_SECRET:}
+  checkout:
+    successUrl: ${STRIPE_CHECKOUT_SUCCESS_URL:http://localhost:3000/payment/success}
+    cancelUrl: ${STRIPE_CHECKOUT_CANCEL_URL:http://localhost:3000/payment/cancel}
+
 springdoc:
   api-docs:
     path: /api-docs
@@ -53,10 +81,3 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
   show-actuator: false
-
-stripe:
-  apiKey: ${STRIPE_API_KEY:}
-  webhookSecret: ${STRIPE_WEBHOOK_SECRET:}
-  checkout:
-    successUrl: ${STRIPE_CHECKOUT_SUCCESS_URL:http://localhost:3000/payment/success}
-    cancelUrl: ${STRIPE_CHECKOUT_CANCEL_URL:http://localhost:3000/payment/cancel}

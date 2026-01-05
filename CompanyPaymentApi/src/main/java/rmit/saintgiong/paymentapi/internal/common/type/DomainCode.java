@@ -1,4 +1,4 @@
-package rmit.saintgiong.profileapi.internal.common.type;
+package rmit.saintgiong.paymentapi.internal.common.type;
 
 import lombok.Getter;
 

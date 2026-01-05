@@ -1,4 +1,4 @@
-package rmit.saintgiong.profileservice.common.kafka;
+package rmit.saintgiong.paymentservice.common.kafka;
 
 import lombok.AllArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -1,6 +1,5 @@
 package rmit.saintgiong.paymentservice.domain.services;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,7 @@ import rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus;
 import rmit.saintgiong.paymentapi.internal.services.CreateCompanyPaymentInterface;
 import rmit.saintgiong.paymentservice.domain.repositories.CompanyPaymentRepository;
 import rmit.saintgiong.paymentservice.domain.repositories.entities.CompanyPaymentEntity;
-import rmit.saintgiong.paymentservice.service.StripePaymentService;
+import rmit.saintgiong.paymentservice.stripe.service.StripePaymentService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

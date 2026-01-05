@@ -1,10 +1,10 @@
-package rmit.saintgiong.paymentservice.common.exception;
+package rmit.saintgiong.paymentservice.common.exception.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Builder;
 import lombok.Getter;
-import rmit.saintgiong.profileapi.internal.common.type.ErrorLocation;
+import rmit.saintgiong.paymentapi.internal.common.type.ErrorLocation;
 
 @Builder
 @Getter

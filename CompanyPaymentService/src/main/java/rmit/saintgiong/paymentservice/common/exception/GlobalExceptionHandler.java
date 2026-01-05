@@ -1,6 +1,8 @@
 package rmit.saintgiong.paymentservice.common.exception;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -10,24 +12,50 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import org.springframework.validation.FieldError;
-import rmit.saintgiong.profileapi.internal.common.type.DomainCode;
-import rmit.saintgiong.profileapi.internal.common.type.ErrorLocation;
+import rmit.saintgiong.paymentapi.internal.common.type.DomainCode;
+import rmit.saintgiong.paymentapi.internal.common.type.ErrorLocation;
+import rmit.saintgiong.paymentservice.common.exception.api.ApiError;
+import rmit.saintgiong.paymentservice.common.exception.api.ApiErrorDetails;
+import rmit.saintgiong.paymentservice.common.exception.domain.DomainException;
+import rmit.saintgiong.paymentservice.common.exception.token.InvalidCredentialsException;
+import rmit.saintgiong.paymentservice.common.exception.token.InvalidTokenException;
+import rmit.saintgiong.paymentservice.common.exception.token.TokenExpiredException;
+import rmit.saintgiong.paymentservice.common.exception.token.TokenReuseException;
+import rmit.saintgiong.shared.response.ErrorResponseDto;
+import rmit.saintgiong.shared.type.CookieType;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static rmit.saintgiong.profileapi.internal.common.type.DomainCode.INTERNAL_SERVER_ERROR;
-import static rmit.saintgiong.profileapi.internal.common.type.DomainCode.INVALID_REQUEST_PARAMETER;
+import static rmit.saintgiong.paymentapi.internal.common.type.DomainCode.INVALID_REQUEST_PARAMETER;
 
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends BaseExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleGlobalException(
+            Exception exception,
+            WebRequest request
+    ) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .apiPath(request.getDescription(false).replace("uri=", ""))
+                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponseDto);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> methodArgumentNotValidException(MethodArgumentNotValidException ex) {
@@ -46,8 +74,8 @@ public class GlobalExceptionHandler extends BaseExceptionHandler {
         return ResponseEntity.badRequest().body(errRes);
     }
 
-    @ExceptionHandler(rmit.saintgiong.profileservice.common.exception.DomainException.class)
-    public ResponseEntity<ApiError> domainException(HttpServletRequest request, rmit.saintgiong.profileservice.common.exception.DomainException ex) {
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ApiError> domainException(HttpServletRequest request, DomainException ex) {
         log.error("method=domainException, endPoint={}, exception={}", request.getRequestURI(), ex.getMessage());
 
         int httpCode = ex.getDomainCode().getCode() / 1000;
@@ -101,19 +129,87 @@ public class GlobalExceptionHandler extends BaseExceptionHandler {
         return ResponseEntity.badRequest().body(errRes);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> exception(Exception ex) {
-        log.error("method=exception, exception={}", ex.getMessage(), ex);
-        var errRes = getErrorResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.getMessageTemplate(), Collections.emptyList());
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponseDto> handleTokenExpiredException(
+            TokenExpiredException exception,
+            WebRequest request
+    ) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .apiPath(request.getDescription(false).replace("uri=", ""))
+                .errorCode(HttpStatus.UNAUTHORIZED)
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errRes);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
     }
 
-    private String getDefaultMessageFromException(MethodArgumentNotValidException ex) {
-        return ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(ex.getMessage());
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidTokenException(
+            InvalidTokenException exception,
+            WebRequest request
+    ) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .apiPath(request.getDescription(false).replace("uri=", ""))
+                .errorCode(HttpStatus.UNAUTHORIZED)
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidCredentialsException(
+            InvalidCredentialsException exception,
+            WebRequest request
+    ) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .apiPath(request.getDescription(false).replace("uri=", ""))
+                .errorCode(HttpStatus.UNAUTHORIZED)
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(TokenReuseException.class)
+    public ResponseEntity<ErrorResponseDto> handleTokenReuseException(
+            TokenReuseException exception,
+            WebRequest request,
+            HttpServletResponse response
+    ) {
+        log.warn("Token reuse detected: {}", exception.getMessage());
+        Cookie accessCookie = new Cookie(CookieType.ACCESS_TOKEN, "");
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(0);
+        response.addCookie(accessCookie);
+
+        Cookie refreshCookie = new Cookie(CookieType.REFRESH_TOKEN, "");
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(0);
+        response.addCookie(refreshCookie);
+
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .apiPath(request.getDescription(false).replace("uri=", ""))
+                .errorCode(HttpStatus.UNAUTHORIZED)
+                .message(exception.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponseDto);
     }
 }
