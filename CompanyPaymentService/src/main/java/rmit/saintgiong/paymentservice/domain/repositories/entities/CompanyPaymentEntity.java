@@ -7,8 +7,10 @@ import rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Entity
-@Table(name = "transaction", indexes = {
+@Data
+@Table(name = "transactions", indexes = {
         @Index(name = "idx_transaction_payment_txn_id", columnList = "payment_transaction_id"),
         @Index(name = "idx_transaction_stripe_intent_id", columnList = "stripe_payment_intent_id"),
         @Index(name = "idx_transaction_stripe_checkout_session_id", columnList = "stripe_checkout_session_id")

@@ -9,14 +9,13 @@ import rmit.saintgiong.paymentapi.internal.services.QueryCompanyPaymentInterface
 import rmit.saintgiong.paymentservice.domain.mappers.CompanyPaymentMapper;
 import rmit.saintgiong.paymentservice.domain.repositories.CompanyPaymentRepository;
 import rmit.saintgiong.paymentservice.domain.repositories.entities.CompanyPaymentEntity;
-import rmit.saintgiong.profileapi.internal.common.type.DomainCode;
-import rmit.saintgiong.profileservice.common.exception.DomainException;
+import rmit.saintgiong.paymentservice.common.exception.domain.DomainException;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static rmit.saintgiong.profileapi.internal.common.type.DomainCode.RESOURCE_NOT_FOUND;
+import static rmit.saintgiong.paymentapi.internal.common.type.DomainCode.RESOURCE_NOT_FOUND;
 
 @Service
 @AllArgsConstructor

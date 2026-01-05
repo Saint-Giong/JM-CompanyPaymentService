@@ -1,4 +1,4 @@
-package rmit.saintgiong.paymentservice.service;
+package rmit.saintgiong.paymentservice.stripe.service;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
