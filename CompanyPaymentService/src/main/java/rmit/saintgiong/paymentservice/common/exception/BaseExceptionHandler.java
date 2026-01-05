@@ -1,8 +1,10 @@
 package rmit.saintgiong.paymentservice.common.exception;
 
 import org.springframework.validation.ObjectError;
-import rmit.saintgiong.profileapi.internal.common.type.DomainCode;
-import rmit.saintgiong.profileapi.internal.common.type.ErrorLocation;
+import rmit.saintgiong.paymentservice.common.exception.api.ApiError;
+import rmit.saintgiong.paymentservice.common.exception.api.ApiErrorDetails;
+import rmit.saintgiong.paymentapi.internal.common.type.DomainCode;
+import rmit.saintgiong.paymentapi.internal.common.type.ErrorLocation;
 
 import java.util.Collections;
 import java.util.List;

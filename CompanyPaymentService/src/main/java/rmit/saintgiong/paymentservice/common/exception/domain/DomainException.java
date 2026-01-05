@@ -1,6 +1,6 @@
-package rmit.saintgiong.profileservice.common.exception;
+package rmit.saintgiong.paymentservice.common.exception.domain;
 
-import rmit.saintgiong.profileapi.internal.common.type.DomainCode;
+import rmit.saintgiong.paymentapi.internal.common.type.DomainCode;
 
 public class DomainException extends RuntimeException {
 
