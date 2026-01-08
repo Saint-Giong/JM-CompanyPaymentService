@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import rmit.saintgiong.paymentservice.domain.repositories.CompanyPaymentRepository;
 import rmit.saintgiong.paymentservice.domain.repositories.entities.CompanyPaymentEntity;
+import rmit.saintgiong.paymentservice.domain.services.StripeCheckoutService;
+import rmit.saintgiong.paymentapi.internal.common.dto.request.CreateStripeCheckoutRequestDto;
+import rmit.saintgiong.paymentapi.internal.common.dto.response.CreateStripeCheckoutResponseDto;
 
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +31,7 @@ public class StripeWebhookController {
 
     private final CompanyPaymentRepository repository;
     private final ObjectMapper objectMapper;
+    private final StripeCheckoutService stripeCheckoutService;
 
     @Value("${stripe.webhookSecret:}")
     private final String webhookSecret;
@@ -35,10 +39,12 @@ public class StripeWebhookController {
     public StripeWebhookController(
             CompanyPaymentRepository repository,
             ObjectMapper objectMapper,
+            StripeCheckoutService stripeCheckoutService,
             @Value("${stripe.webhookSecret:}") String webhookSecret
     ) {
         this.repository = repository;
         this.objectMapper = objectMapper;
+        this.stripeCheckoutService = stripeCheckoutService;
         this.webhookSecret = webhookSecret;
         log.info("StripeWebhookController initialized");
     }
@@ -82,6 +88,18 @@ public class StripeWebhookController {
         }
 
         return ResponseEntity.ok("ok");
+    }
+
+    /**
+     * Create Stripe checkout session for external teams (e.g., JA)
+     * Does NOT save to database - only creates Stripe session
+     */
+    @PostMapping("/checkout-session")
+    public ResponseEntity<CreateStripeCheckoutResponseDto> createCheckoutSession(
+            @RequestBody CreateStripeCheckoutRequestDto request) {
+        
+        CreateStripeCheckoutResponseDto response = stripeCheckoutService.createStripeCheckout(request);
+        return ResponseEntity.ok(response);
     }
 
     private void handleCheckoutSessionCompleted(Event event, String payload) {
