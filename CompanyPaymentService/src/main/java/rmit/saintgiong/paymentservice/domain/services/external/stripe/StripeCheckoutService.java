@@ -131,11 +131,11 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
         PaymentIntent pi = deserializeOrNull(event, PaymentIntent.class);
         if (pi == null) return;
 
-        companyPaymentRepository.findByStripePaymentIntentId(pi.getId())
-                .ifPresent(entity -> {
-                    entity.setStatus(FAILED);
-                    companyPaymentRepository.save(entity);
-                });
+        companyPaymentRepository.findByStripePaymentIntentId(pi.getId()).ifPresent(entity -> {
+            entity.setStatus(FAILED);
+
+            companyPaymentRepository.save(entity);
+        });
     }
 
     private CheckoutSessionInfo extractCheckoutSessionInfo(Event event, String payload) {
@@ -199,6 +199,7 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
             try {
                 UUID id = UUID.fromString(info.clientReferenceId());
                 return companyPaymentRepository.findById(id).orElse(null);
+
             } catch (IllegalArgumentException ignored) {
                 // ignore
             }

@@ -31,7 +31,27 @@ public class StripeWebhookService implements ExternalStripeWebhookInterface {
         log.info("method=handleWebhook, message=Received Stripe event, type={}, id={}",
                 event.getType(), event.getId());
 
-        routeEventToHandler(event, payload);
+        switch (event.getType()) {
+            // Stripe Checkout events
+            case "checkout.session.completed" ->
+                    stripeCheckoutInterface.handleCheckoutSessionCompleted(event, payload);
+
+            case "checkout.session.async_payment_succeeded" ->
+                    stripeCheckoutInterface.handleCheckoutSessionAsyncSucceeded(event, payload);
+
+            case "checkout.session.async_payment_failed" ->
+                    stripeCheckoutInterface.handleCheckoutSessionAsyncFailed(event, payload);
+
+            // Fallback/legacy PaymentIntent flow
+            case "payment_intent.succeeded" ->
+                    stripeCheckoutInterface.handlePaymentIntentSucceeded(event);
+
+            case "payment_intent.payment_failed" ->
+                    stripeCheckoutInterface.handlePaymentIntentFailed(event);
+
+            default ->
+                    log.debug("method=routeEventToHandler, message=Unhandled event type: {}", event.getType());
+        }
     }
 
     private void validateWebhookConfiguration(String sigHeader) {
@@ -54,30 +74,6 @@ public class StripeWebhookService implements ExternalStripeWebhookInterface {
                     "Invalid webhook signature",
                     sigHeader
             );
-        }
-    }
-
-    private void routeEventToHandler(Event event, String payload) {
-        switch (event.getType()) {
-            // Stripe Checkout events
-            case "checkout.session.completed" ->
-                stripeCheckoutInterface.handleCheckoutSessionCompleted(event, payload);
-
-            case "checkout.session.async_payment_succeeded" ->
-                stripeCheckoutInterface.handleCheckoutSessionAsyncSucceeded(event, payload);
-
-            case "checkout.session.async_payment_failed" ->
-                stripeCheckoutInterface.handleCheckoutSessionAsyncFailed(event, payload);
-
-            // Fallback/legacy PaymentIntent flow
-            case "payment_intent.succeeded" ->
-                stripeCheckoutInterface.handlePaymentIntentSucceeded(event);
-
-            case "payment_intent.payment_failed" ->
-                stripeCheckoutInterface.handlePaymentIntentFailed(event);
-
-            default ->
-                log.debug("method=routeEventToHandler, message=Unhandled event type: {}", event.getType());
         }
     }
 }

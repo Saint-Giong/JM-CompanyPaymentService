@@ -27,7 +27,9 @@ public class StripeController {
     ) {
         try {
             externalStripeWebhookInterface.handleWebhook(payload, sigHeader);
-            return ResponseEntity.ok("Webhook processed successfully");
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("Webhook processed successfully");
 
         } catch (IllegalArgumentException e) {
             log.warn("method=handleWebhook, message=Webhook validation failed: {}", e.getMessage());
@@ -35,16 +37,18 @@ public class StripeController {
             if (e.getMessage().contains("not configured")) {
                 return ResponseEntity.ok("Webhook ignored - not configured");
             }
-
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
 
         } catch (SignatureVerificationException e) {
             log.warn("method=handleWebhook, message=Invalid webhook signature: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid signature");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid signature");
 
         } catch (Exception e) {
             log.error("method=handleWebhook, message=Unexpected error processing webhook: {}", e.getMessage(), e);
-
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error processing webhook");
