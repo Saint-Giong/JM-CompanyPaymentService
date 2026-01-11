@@ -1,11 +1,15 @@
 package rmit.saintgiong.paymentapi.internal.common.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateCompanyPaymentResponseDto {
     private String id;
     private TransactionStatus status;
