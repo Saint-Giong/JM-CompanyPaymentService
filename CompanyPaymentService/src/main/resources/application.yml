@@ -24,6 +24,21 @@ spring:
       password: ${REDIS_PASSWORD:}
       port: ${REDIS_PORT:6479}
       timeout: 2000ms
+      
+  kafka:
+    bootstrap-servers:
+      - ${KAFKA_HOST_URL:localhost:9192}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    consumer:
+      group-id: ${spring.application.name}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    properties:
+      schema.registry.url: ${SCHEMA_REGISTRY_HOST_URL:http://localhost:9191}
+      specific.avro.reader: true
 
 management:
   endpoints:
@@ -49,10 +64,6 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8070/eureka}
 
-kafka:
-  kafka-host-url: ${KAFKA_HOST_URL:localhost:9192}
-  schema-registry-host-url: ${SCHEMA_REGISTRY_HOST_URL:http://localhost:9191}
-
 key:
   public-key-b64: ${PUBLIC_KEY_B64:}
   private-key-b64: ${PRIVATE_KEY_B64:}
@@ -62,7 +73,6 @@ jwe:
   temp-token-ttl-seconds: ${JWE_TEMP_TOKEN_TTL:300}
   access-token-ttl-seconds: ${JWE_ACCESS_TOKEN_TTL:900}
   refresh-token-ttl-seconds: ${JWE_REFRESH_TOKEN_TTL:604800}
-
 
 stripe:
   apiKey: ${STRIPE_API_KEY:}

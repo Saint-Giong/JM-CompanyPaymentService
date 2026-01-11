@@ -5,19 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
+import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import rmit.saintgiong.paymentapi.external.services.ExternalCompanyPaymentRequestInterface;
+import rmit.saintgiong.paymentapi.external.services.stripe.ExternalStripeCheckoutInterface;
 import rmit.saintgiong.paymentapi.internal.common.dto.request.CreateStripeCheckoutRequestDto;
 import rmit.saintgiong.paymentapi.internal.common.dto.response.CreateStripeCheckoutResponseDto;
 import rmit.saintgiong.paymentapi.internal.common.stripe.CheckoutSessionInfo;
-import rmit.saintgiong.paymentapi.external.services.stripe.ExternalStripeCheckoutInterface;
 import rmit.saintgiong.paymentservice.domain.repositories.CompanyPaymentRepository;
 import rmit.saintgiong.paymentservice.domain.repositories.entities.CompanyPaymentEntity;
 import rmit.saintgiong.paymentservice.stripe.service.StripePaymentService;
-
-import java.util.Map;
-import java.util.UUID;
 
 import static rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus.FAILED;
 import static rmit.saintgiong.paymentapi.internal.common.type.TransactionStatus.SUCCESSFUL;
@@ -32,6 +32,8 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
     private final CompanyPaymentRepository companyPaymentRepository;
 
     private final ObjectMapper objectMapper;
+
+    private final ExternalCompanyPaymentRequestInterface externalPaymentRequestService;
 
     @Override
     public CreateStripeCheckoutResponseDto createStripeCheckout(CreateStripeCheckoutRequestDto req) {
@@ -77,6 +79,9 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
             entity.setPaymentTransactionId(info.paymentIntentId());
         }
         companyPaymentRepository.save(entity);
+
+        // Notify Subscription Service about successful payment
+        notifySuccessfulSubscriptionPaid(entity);
     }
 
     @Override
@@ -92,6 +97,9 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
             entity.setPaymentTransactionId(info.paymentIntentId());
         }
         companyPaymentRepository.save(entity);
+
+        // Notify Subscription Service about successful payment
+        notifySuccessfulSubscriptionPaid(entity);
     }
 
     @Override
@@ -123,7 +131,28 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
             }
 
             companyPaymentRepository.save(entity);
+
+            // Notify Subscription Service about successful payment
+            notifySuccessfulSubscriptionPaid(entity);
         });
+    }
+
+    private void notifySuccessfulSubscriptionPaid(CompanyPaymentEntity entity) {
+        if (entity.getSubscriptionId() == null) {
+            log.debug("method=notifySubscriptionService, message=No subscriptionId linked to payment, skipping notification, paymentId={}", entity.getId());
+            return;
+        }
+
+        try {
+            externalPaymentRequestService.sendSubscriptionPaidRequest(
+                    entity.getCompanyId(),
+                    entity.getId(),
+                    entity.getStatus().toString()
+            );
+        } catch (Exception e) {
+            log.error("method=notifySubscriptionService, message=Failed to send subscription paid notification, companyId={}, error={}",
+                    entity.getCompanyId(), e.getMessage());
+        }
     }
 
     @Override
