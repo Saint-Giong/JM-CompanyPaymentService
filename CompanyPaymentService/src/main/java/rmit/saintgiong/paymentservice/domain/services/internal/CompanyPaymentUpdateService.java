@@ -1,4 +1,4 @@
-package rmit.saintgiong.paymentservice.domain.services;
+package rmit.saintgiong.paymentservice.domain.services.internal;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class CompanyPaymentUpdateService implements UpdateCompanyPaymentInterfac
         CompanyPaymentEntity existing = repository.findById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
 
-        if (req.getAmount() != null) existing.setAmount(req.getAmount().doubleValue());
+        if (req.getAmount() != null) existing.setAmount(req.getAmount());
         if (req.getCurrency() != null) existing.setCurrency(req.getCurrency());
         if (req.getMethod() != null) {
             existing.setMethod(PaymentMethod.valueOf(req.getMethod().name()));

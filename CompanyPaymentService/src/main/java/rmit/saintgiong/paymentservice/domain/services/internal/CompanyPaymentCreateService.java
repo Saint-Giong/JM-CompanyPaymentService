@@ -1,4 +1,4 @@
-package rmit.saintgiong.paymentservice.domain.services;
+package rmit.saintgiong.paymentservice.domain.services.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
