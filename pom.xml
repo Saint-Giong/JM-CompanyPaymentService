@@ -37,6 +37,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>22.27.0</version>
+        </dependency>
+        <dependency>
             <groupId>devision.saintgiong</groupId>
             <artifactId>sg-shared-dto-package</artifactId>
             <version>0.0.1-SNAPSHOT-10513010012026</version>

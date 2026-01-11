@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(servers = {
         @Server(url = "/v1/payment/", description = "To Gateway Endpoint"),
-        @Server(url = "http://localhost:${server.port}}", description = "Direct Payment URL")
+        @Server(url = "http://localhost:${server.port}", description = "Direct Payment URL")
 })
 public class OpenApiConfig {
 
