@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import rmit.saintgiong.paymentapi.external.services.ExternalCompanyPaymentRequestInterface;
 import rmit.saintgiong.paymentapi.external.services.kafka.EventProducerInterface;
-import rmit.saintgiong.paymentapi.internal.common.type.KafkaTopic;
 import rmit.saintgiong.shared.dto.avro.payment.SubscriptionPaidRequestRecord;
+import rmit.saintgiong.shared.type.KafkaTopic;
 
 @Service
 @Slf4j
@@ -28,7 +28,7 @@ public class ExternalCompanyPaymentRequestService implements ExternalCompanyPaym
                 .build();
 
         eventProducer.send(
-                KafkaTopic.SUBSCRIPTION_PAID_NOTIFICATION_TOPIC,
+                KafkaTopic.JM_SUBSCRIPTION_PAID_NOTIFICATION_TOPIC,
                 requestRecord
         );
 

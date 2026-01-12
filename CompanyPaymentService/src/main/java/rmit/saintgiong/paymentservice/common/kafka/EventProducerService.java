@@ -12,10 +12,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Component;
 import rmit.saintgiong.paymentapi.external.services.kafka.EventProducerInterface;
 
-
-
-
-
 @Component
 public class EventProducerService implements EventProducerInterface {
 
