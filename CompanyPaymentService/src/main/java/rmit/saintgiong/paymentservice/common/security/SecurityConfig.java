@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import rmit.saintgiong.shared.type.Role;
 
 @Configuration
 @EnableWebSecurity
@@ -36,8 +37,10 @@ public class SecurityConfig {
                                                                 "/v3/api-docs/**",
                                                                 "/favicon.ico")
                                                 .permitAll()
-
-                                                .anyRequest().permitAll())
+                                                .requestMatchers(
+                                                        "/stripe/**"
+                                                ).permitAll()
+                                                .anyRequest().hasRole(Role.COMPANY.name()))
                                 .sessionManagement(
                                                 session -> session
                                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
