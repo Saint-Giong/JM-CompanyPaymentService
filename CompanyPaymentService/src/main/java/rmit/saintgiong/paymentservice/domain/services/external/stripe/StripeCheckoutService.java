@@ -138,12 +138,15 @@ public class StripeCheckoutService implements ExternalStripeCheckoutInterface {
     }
 
     private void notifySuccessfulSubscriptionPaid(CompanyPaymentEntity entity) {
-        if (entity.getSubscriptionId() == null) {
-            log.debug("method=notifySubscriptionService, message=No subscriptionId linked to payment, skipping notification, paymentId={}", entity.getId());
+        if (entity.getCompanyId() == null) {
+            log.warn("method=notifySubscriptionService, message=No companyId linked to payment, skipping notification, paymentId={}", entity.getId());
             return;
         }
 
         try {
+            log.info("method=notifySubscriptionService, message=Sending subscription paid notification, companyId={}, paymentId={}, subscriptionId={}",
+                    entity.getCompanyId(), entity.getId(), entity.getSubscriptionId());
+            
             externalPaymentRequestService.sendSubscriptionPaidRequest(
                     entity.getCompanyId(),
                     entity.getId(),
