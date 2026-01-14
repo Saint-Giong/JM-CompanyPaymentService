@@ -78,8 +78,8 @@ stripe:
   apiKey: ${STRIPE_API_KEY:}
   webhookSecret: ${STRIPE_WEBHOOK_SECRET:}
   checkout:
-    successUrl: ${FRONTEND_BASE_URL:https://localhost:3000}/subscription/success
-    cancelUrl: ${FRONTEND_BASE_URL:https://localhost:3000}/subscription/cancel
+    successUrl: ${FRONTEND_BASE_URL:https://localhost:3000}/subscription?success=true&session_id={CHECKOUT_SESSION_ID}
+    cancelUrl: ${FRONTEND_BASE_URL:https://localhost:3000}/subscription?canceled=true
 
 springdoc:
   api-docs:
