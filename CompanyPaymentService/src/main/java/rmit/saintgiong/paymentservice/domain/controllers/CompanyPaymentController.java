@@ -31,7 +31,7 @@ public class CompanyPaymentController {
     private final UpdateCompanyPaymentInterface updateService;
     private final DeleteCompanyPaymentInterface deleteService;
 
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<CreateCompanyPaymentResponseDto> createTransaction(@Valid @RequestBody CreateCompanyPaymentRequestDto req) {
         String requestId = UUID.randomUUID().toString();
         CreateCompanyPaymentResponseDto response = createService.createCompanyPayment(req);
@@ -43,7 +43,7 @@ public class CompanyPaymentController {
         return ResponseEntity.ok(queryService.getCompanyPayment(id));
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<QueryCompanyPaymentResponseDto>> list() {
         return ResponseEntity.ok(queryService.listCompanyPayments());
     }
